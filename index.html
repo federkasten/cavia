@@ -3028,8 +3028,8 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>cavia -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cavia</h1><h2 class="project-version">0.1.3</h2><br /><p>A test resource manager for Clojure</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.5</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.3.2</td></tr><tr><td class="dep-name">clj-http</td><td class="dotted"><hr /></td><td class="dep-version">0.9.1</td></tr><tr><td class="dep-name">com.velisco/clj-ftp</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr><tr><td class="dep-name">clojurewerkz/urly</td><td class="dotted"><hr /></td><td class="dep-version">1.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cavia.common">cavia.common</a></li><li><a href="#cavia.core">cavia.core</a></li><li><a href="#cavia.downloader">cavia.downloader</a></li><li><a href="#cavia.util">cavia.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cavia.common" name="cavia.common"><h1 class="project-name">cavia.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</script><title>cavia -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">cavia</h1><h2 class="project-version">0.1.4</h2><br /><p>A test resource manager for Clojure</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.6.0</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.5.1</td></tr><tr><td class="dep-name">clj-http</td><td class="dotted"><hr /></td><td class="dep-version">1.0.1</td></tr><tr><td class="dep-name">com.velisco/clj-ftp</td><td class="dotted"><hr /></td><td class="dep-version">0.3.3</td></tr><tr><td class="dep-name">clojurewerkz/urly</td><td class="dotted"><hr /></td><td class="dep-version">1.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cavia.common">cavia.common</a></li><li><a href="#cavia.core">cavia.core</a></li><li><a href="#cavia.downloader">cavia.downloader</a></li><li><a href="#cavia.util">cavia.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cavia.common" name="cavia.common"><h1 class="project-name">cavia.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns cavia.common)</pre></td></tr><tr><td class="docs"><p>A boolean value representing verbosity.</p>
 </td><td class="codes"><pre class="brush: clojure">(def ^:dynamic *verbose*
   true)</pre></td></tr><tr><td class="docs"><p>A buffer size using in a downloading process. Its unit is byte.</p>
@@ -3042,7 +3042,8 @@ net.brehaut.ClojureTools = (function (SH) {
             [pandect.core :refer [sha1-file]]
             [cavia.common :refer :all]
             [cavia.downloader :as dl]
-            [cavia.util :as util]))</pre></td></tr><tr><td class="docs">
+            [cavia.util :as util])
+  (:import java.io.File))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def skeleton-profile {:download-to &quot;.cavia&quot;})</pre></td></tr><tr><td class="docs"><p>Defines a cavia profile.</p>
 
 <p>  e.g.:</p>
@@ -3094,7 +3095,7 @@ net.brehaut.ClojureTools = (function (SH) {
                       (filter #(= (:id %) id))
                       (first)
                       (:id))]
-      (fs/absolute-path (str download-to &quot;/&quot; (name id*))))))</pre></td></tr><tr><td class="docs">
+      (.getAbsolutePath ^File (fs/absolute (str download-to &quot;/&quot; (name id*)))))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- resource-download [profile id]
   (format &quot;%s.download&quot; (resource* profile id)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- resource-unverified [profile id]
