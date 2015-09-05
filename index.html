@@ -2865,8 +2865,8 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>cavia -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://totakke.github.io/cavia/">cavia</a></h1><h2 class="project-version">0.1.5</h2><br /><p>A test resource manager for Clojure</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.7.0</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.5.2</td></tr><tr><td class="dep-name">clj-http</td><td class="dotted"><hr /></td><td class="dep-version">1.1.2</td></tr><tr><td class="dep-name">com.velisco/clj-ftp</td><td class="dotted"><hr /></td><td class="dep-version">0.3.3</td></tr><tr><td class="dep-name">clojurewerkz/urly</td><td class="dotted"><hr /></td><td class="dep-version">1.0.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cavia.common">cavia.common</a></li><li><a href="#cavia.core">cavia.core</a></li><li><a href="#cavia.downloader">cavia.downloader</a></li><li><a href="#cavia.util">cavia.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cavia.common" name="cavia.common"><h1 class="project-name">cavia.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</script><title>cavia -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://totakke.github.io/cavia/">cavia</a></h1><h2 class="project-version">0.2.0</h2><br /><p>A test resource manager for Clojure</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.7.0</td></tr><tr><td class="dep-name">me.raynes/fs</td><td class="dotted"><hr /></td><td class="dep-version">1.4.6</td></tr><tr><td class="dep-name">pandect</td><td class="dotted"><hr /></td><td class="dep-version">0.5.3</td></tr><tr><td class="dep-name">clj-http-lite</td><td class="dotted"><hr /></td><td class="dep-version">0.3.0</td></tr><tr><td class="dep-name">com.cemerick/url</td><td class="dotted"><hr /></td><td class="dep-version">0.1.1</td></tr><tr><td class="dep-name">commons-net</td><td class="dotted"><hr /></td><td class="dep-version">3.3</td></tr><tr><td class="dep-name">progrock</td><td class="dotted"><hr /></td><td class="dep-version">0.1.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#cavia.common">cavia.common</a></li><li><a href="#cavia.core">cavia.core</a></li><li><a href="#cavia.downloader">cavia.downloader</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cavia.common" name="cavia.common"><h1 class="project-name">cavia.common</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns cavia.common)</pre></td></tr><tr><td class="docs"><p>A boolean value representing verbosity.</p>
 </td><td class="codes"><pre class="brush: clojure">(def ^:dynamic *verbose*
   true)</pre></td></tr><tr><td class="docs"><p>A buffer size using in a downloading process. Its unit is byte.</p>
@@ -2875,11 +2875,11 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(ns cavia.core
   (:refer-clojure :exclude [get])
   (:require [clojure.java.io :as io]
+            [cemerick.url :as c-url]
             [me.raynes.fs :as fs]
             [pandect.core :refer [sha1-file]]
             [cavia.common :refer :all]
-            [cavia.downloader :as dl]
-            [cavia.util :as util])
+            [cavia.downloader :as dl])
   (:import java.io.File))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def skeleton-profile {:download-to &quot;.cavia&quot;})</pre></td></tr><tr><td class="docs"><p>Defines a cavia profile.</p>
 
@@ -3061,9 +3061,9 @@ net.brehaut.ClojureTools = (function (SH) {
         {:keys [url sha1 auth]} (resource-info profile id)]
     (when *verbose*
       (println (format &quot;Retrieving %s from %s&quot; id url)))
-    (condp #(%1 %2) (util/protocol-of url)
-      #{:http :https} (dl/http-download! url dl-f :auth auth)
-      #{:ftp}         (dl/ftp-download! url dl-f :auth auth)
+    (condp #(%1 %2) (:protocol (c-url/url url))
+      #{&quot;http&quot; &quot;https&quot;} (dl/http-download! url dl-f :auth auth)
+      #{&quot;ftp&quot;}          (dl/ftp-download! url dl-f :auth auth)
       (throw (java.net.MalformedURLException. &quot;Unsupported protocol&quot;)))
     (fs/rename dl-f uv-f)
     (let [act-sha1 (sha1-file uv-f)]
@@ -3097,39 +3097,28 @@ net.brehaut.ClojureTools = (function (SH) {
 </td><td class="codes"><pre class="brush: clojure">(ns cavia.downloader
   (:require [clojure.string :as string]
             [clojure.java.io :as io]
-            [clj-http.client :as client]
-            [miner.ftp :as ftp]
-            [clojurewerkz.urly.core :as urly]
+            [clj-http.lite.client :as client]
+            [cemerick.url :as c-url]
+            [progrock.core :as pr]
             [cavia.common :refer :all])
-  (:import [java.io InputStream OutputStream]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def ^:private printed-percentage (atom -1))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn- print-progress
-  [now total]
-  (let [percentage (quot (* now 100) total)]
-    (when-not (= percentage @printed-percentage)
-      (print (str &quot;\r&quot;
-                  (string/join
-                   (map-indexed (fn [idx _]
-                                  (if (&lt; idx (quot percentage 2)) \# \space))
-                                (repeat 50 nil)))
-                  &quot;| &quot; percentage &quot;%&quot;))
-      (flush)
-      (reset! printed-percentage percentage))))</pre></td></tr><tr><td class="docs"><p>Downloads from the InputStream to the OutputStream. To print progress, it
+  (:import [java.io InputStream OutputStream]
+           java.net.URLDecoder
+           [org.apache.commons.net.ftp FTP FTPClient FTPSClient FTPReply]))</pre></td></tr><tr><td class="docs"><p>Downloads from the InputStream to the OutputStream. To print progress, it
   requires the content length.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn- download!
   [^InputStream is ^OutputStream os content-len]
-  (let [data (byte-array *download-buffer-size*)]
+  (let [data (byte-array *download-buffer-size*)
+        with-print (and *verbose* (pos? content-len))]
     (loop [len (.read is data)
-           sum len]
-      (when-not (= len -1)
-        (when (and *verbose* (pos? content-len))
-          (print-progress sum content-len))
-        (.write os data 0 len)
-        (let [len (.read is data)]
-          (recur len (+ sum len))))))
-  (reset! printed-percentage -1)
-  (when (and *verbose* (pos? content-len))
-    (newline)))</pre></td></tr><tr><td class="docs"><p>Downloads from the url via HTTP/HTTPS and saves it to local as f.</p>
+           sum len
+           bar (pr/progress-bar 100)]
+      (if (= len -1)
+        (when with-print (pr/print (pr/done bar)))
+        (do
+          (when with-print (pr/print bar))
+          (.write os data 0 len)
+          (let [len (.read is data)]
+            (recur len (+ sum len) (assoc bar :progress (quot (* sum 100) content-len)))))))))</pre></td></tr><tr><td class="docs"><p>Downloads from the url via HTTP/HTTPS and saves it to local as f.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn http-download!
   [url f &amp; {:keys [auth]}]
   (let [option (merge {:as :stream}
@@ -3140,35 +3129,62 @@ net.brehaut.ClojureTools = (function (SH) {
                       (Integer. ^String content-len) -1)
         is (:body response)]
     (with-open [os (io/output-stream f)]
-      (download! is os content-len))))</pre></td></tr><tr><td class="docs"><p>Downloads from the url via FTP and saves it to local as f.</p>
+      (download! is os content-len))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- ftp-client
+  [url]
+  (let [u (c-url/url url)
+        ^FTPClient client (case (:protocol u)
+                            &quot;ftp&quot; (FTPClient.)
+                            &quot;ftps&quot; (FTPSClient.)
+                            (throw (Exception. (str &quot;unexpected protocol &quot;
+                                                    (:protocol u)
+                                                    &quot; in FTP url, need \&quot;ftp\&quot; or \&quot;ftps\))))]
+    (.connect client (:host u) (if (= -1 (:port u)) 21 (:port u)))
+    (let [reply (.getReplyCode client)]
+      (if (not (FTPReply/isPositiveCompletion reply))
+        (do (.disconnect client)
+            (println &quot;Connection refused&quot;)
+            nil)
+        client))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- url-decode
+  [s]
+  (if s (URLDecoder/decode s &quot;UTF-8&quot;) ))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn- complete-pending-command
+  [ftp-client]
+  (.completePendingCommand ftp-client)
+  (let [reply-code (.getReplyCode ftp-client)]
+    (when-not (FTPReply/isPositiveCompletion reply-code)
+      (throw (ex-info &quot;Not a Positive completion of last command&quot;
+                      {:reply-code reply-code
+                       :reply-string (.getReplyString ftp-client)})))))</pre></td></tr><tr><td class="docs"><p>Downloads from the url via FTP and saves it to local as f.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn ftp-download!
   [url f &amp; {:keys [auth]}]
-  (let [u (urly/url-like url)
-        host (str (urly/protocol-of u) &quot;://&quot;
-                  (if-let [{:keys [user password]} auth]
-                    (str user &quot;:&quot; password &quot;@&quot; (urly/host-of u))
-                    (urly/authority-of u)))
-        path (urly/path-of u)]
-    (ftp/with-ftp [ftp-client host :file-type :binary]
-      (.setSoTimeout ftp-client 30000)
-      (.setDataTimeout ftp-client 30000)
-      (let [content-len (.. ftp-client (mlistFile path) getSize)]
-        (with-open [is ^InputStream (ftp/client-get-stream ftp-client path)
+  (when-let [client* (ftp-client url)]
+    (try
+      (when-let [{:keys [user password]} auth]
+        (.login client* (url-decode user) (url-decode password)))
+      (doto client*
+        (.setFileType FTP/BINARY_FILE_TYPE)
+        (.setControlKeepAliveTimeout 300)
+        (.setControlKeepAliveReplyTimeout 1000)
+        (.setSoTimeout 30000)
+        (.setDataTimeout 30000)
+        (.enterLocalPassiveMode))
+      (let [u (c-url/url url)
+            content-len (.. client* (mlistFile (:path u)) getSize)]
+        (with-open [is ^InputStream (.retrieveFileStream client* (:path u))
                     os (io/output-stream f)]
           (download! is os content-len)))
       (try
-        (ftp/client-complete-pending-command ftp-client)
+        (complete-pending-command client*)
         (catch java.net.SocketTimeoutException e
           ;; NOTE: `client-complete-pending-command` sometimes hangs after
           ;;       downloading a large file. But the file is fine and the
           ;;       downloading process succeded to finish. Therefore here
           ;;       ignores the timeout.
-          nil)))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#cavia.util" name="cavia.util"><h1 class="project-name">cavia.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns cavia.util
-  (:require [clojurewerkz.urly.core :as urly]))</pre></td></tr><tr><td class="docs"><p>Returns the protocol as Keyword from specified URL. (e.g. :http, :https, etc)</p>
-</td><td class="codes"><pre class="brush: clojure">(defn protocol-of
-  [url]
-  (keyword (urly/protocol-of (urly/url-like url))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cavia.common">cavia.common</li><li class="floating-toc-li" id="floating-toc_cavia.core">cavia.core</li><li class="floating-toc-li" id="floating-toc_cavia.downloader">cavia.downloader</li><li class="floating-toc-li" id="floating-toc_cavia.util">cavia.util</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+          nil))
+      (finally (when (.isConnected client*)
+                 (.disconnect client*))))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_cavia.common">cavia.common</li><li class="floating-toc-li" id="floating-toc_cavia.core">cavia.core</li><li class="floating-toc-li" id="floating-toc_cavia.downloader">cavia.downloader</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack
